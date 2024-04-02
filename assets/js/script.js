@@ -34,7 +34,7 @@ function createTaskCard(task) {
         <h5 class="card-title">${task.title}</h5>
         <p class="card-text">${task.date}</p>
         <p class="card-text">${task.description}</p>
-        <button class="btn btn-danger">Delete</button>
+        <button class="btn btn-danger delete-card">Delete</button>
       </div>
     </div>
   `)
@@ -54,7 +54,6 @@ function saveTaskstoLocalStorage(taskList) {
 function renderTaskList() {
     const savedTasks = getTasksFromLocalStorage()
 
-    console.log(savedTasks)
     todoEl.empty()
     inProgressEl.empty()
     doneEl.empty()
@@ -113,11 +112,44 @@ modal.hide();
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
+    console.log("DELETE")
+    console.log(event.target.closest('.card'))
+    const taskId = $(event.target).closest('.card').data('id') 
+    
+    // get saved tasks from local storage
+    const tasks = getTasksFromLocalStorage()
+    // loop through tasks 
+    // // remove task with id of the onlick card
+    const tasksToKeep = tasks.filter(function(task) {
+        return task.id !== taskId
+    })
 
+    // save tasklist to local storage
+    saveTaskstoLocalStorage(tasksToKeep)
+
+    // render task list
+    renderTaskList()
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
+    console.log(ui)
+    console.log(event)
+    const targetListId = event.target.id.replace('-cards', '')
+    const card = ui.draggable[0]
+    const taskId = $(card).data('id')
+
+    const tasks = getTasksFromLocalStorage() 
+    for (const taskData of tasks) {
+         
+        if(taskData.id === taskId) {
+            taskData.status = targetListId
+        }
+    } 
+    saveTaskstoLocalStorage(tasks)
+
+
+    renderTaskList()
 
 }
 
@@ -125,4 +157,10 @@ function handleDrop(event, ui) {
 $(document).ready(function () {
     taskFormEl.on("submit", handleAddTask)
     renderTaskList()
+
+    $('.swim-lane').droppable({
+        drop: handleDrop
+    })
+
+    $('.swim-lanes').on('click', '.delete-card', handleDeleteTask)
 });
