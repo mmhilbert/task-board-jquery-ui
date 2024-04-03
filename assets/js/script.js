@@ -26,10 +26,29 @@ function generateTaskId() {
     return currentId
 }
 
+function getTaskTimeStatus(task) {
+    const taskDate = dayjs(task.date)
+    const todaysDate = dayjs()
+    
+    const dateDifference = taskDate.diff(todaysDate, 'day')
+    
+    if (task.status === 'done') {
+        return 'complete'
+    } else if (dateDifference < 0) {
+        return 'past-due'
+    } else if (dateDifference === 0) {
+        return 'due-today'
+    } else {
+        return 'due-in-future'
+    }
+}
+
 // Todo: create a function to create a task card
 function createTaskCard(task) {
+    const timeStatus = getTaskTimeStatus(task)
+
     const card = $(`
-    <div class="card draggable" data-id="${task.id}" data-status="${task.status}">
+    <div class="card draggable task-card ${timeStatus}" data-id="${task.id}" data-status="${task.status}">
       <div class="card-body">
         <h5 class="card-title">${task.title}</h5>
         <p class="card-text">${task.date}</p>
@@ -112,8 +131,6 @@ modal.hide();
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
-    console.log("DELETE")
-    console.log(event.target.closest('.card'))
     const taskId = $(event.target).closest('.card').data('id') 
     
     // get saved tasks from local storage
@@ -133,8 +150,6 @@ function handleDeleteTask(event){
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
-    console.log(ui)
-    console.log(event)
     const targetListId = event.target.id.replace('-cards', '')
     const card = ui.draggable[0]
     const taskId = $(card).data('id')
@@ -163,4 +178,6 @@ $(document).ready(function () {
     })
 
     $('.swim-lanes').on('click', '.delete-card', handleDeleteTask)
+
+
 });

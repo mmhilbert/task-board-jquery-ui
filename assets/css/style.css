@@ -8,7 +8,7 @@ body {
 }
 
 .task-card {
-  margin: 0 auto;
+  margin: 0 0 10px 0;
 }
 
 .task-card:hover {
@@ -17,4 +17,16 @@ body {
 
 .swim-lane {
   height: 100%
+}
+
+.due-today {
+background-color: rgb(255, 183, 0);
+}
+
+.past-due {
+  background-color: #DC3545;
+}
+
+.past-due button {
+  border: 2px solid white;
 }
