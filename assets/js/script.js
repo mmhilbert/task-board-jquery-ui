@@ -28,7 +28,7 @@ function generateTaskId() {
 
 function getTaskTimeStatus(task) {
     const taskDate = dayjs(task.date)
-    const todaysDate = dayjs()
+    const todaysDate = dayjs().format('YYYY-MM-DD')
     
     const dateDifference = taskDate.diff(todaysDate, 'day')
     
